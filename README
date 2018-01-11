@@ -14,3 +14,5 @@ Please point your favorite browser to:
 
  doc/luajit.html
 
+11.01.2017 HB: interacitve shell "zsh/bash-like" when in interactive mode, 
+               optimizing for AMD FX processor, unrolling of loops, 8% faster
