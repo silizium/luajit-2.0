@@ -36,7 +36,7 @@ CC= $(DEFAULT_CC)
 # to slow down the C part by not omitting it. Debugging, tracebacks and
 # unwinding are not affected -- the assembler part has frame unwind
 # information and GCC emits it where needed (x64) or with -g (see CCDEBUG).
-CCOPT= -O2 -fomit-frame-pointer
+CCOPT= -O3 -fomit-frame-pointer -funroll-all-loops
 # Use this if you want to generate a smaller binary (but it's slower):
 #CCOPT= -Os -fomit-frame-pointer
 # Note: it's no longer recommended to use -O3 with GCC 4.x.
@@ -51,7 +51,7 @@ CCOPT= -O2 -fomit-frame-pointer
 # the binaries to a different machine you could also use: -march=native
 #
 CCOPT_x86= -march=i686
-CCOPT_x64=
+CCOPT_x64= -march=bdver2 -mfma4
 CCOPT_arm=
 CCOPT_ppc=
 CCOPT_ppcspe=
@@ -90,7 +90,7 @@ BUILDMODE= mixed
 ##############################################################################
 # Enable/disable these features as needed, but make sure you force a full
 # recompile with "make clean", followed by "make".
-XCFLAGS=
+XCFLAGS=-funroll-all-loops
 #
 # Permanently disable the FFI extension to reduce the size of the LuaJIT
 # executable. But please consider that the FFI library is compiled-in,
@@ -222,7 +222,7 @@ TARGET_DYNXLDOPTS=
 TARGET_LFSFLAGS= -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 TARGET_XCFLAGS= $(TARGET_LFSFLAGS) -U_FORTIFY_SOURCE
 TARGET_XLDFLAGS=
-TARGET_XLIBS= -lm
+TARGET_XLIBS= -lm -lreadline
 TARGET_TCFLAGS= $(CCOPTIONS) $(TARGET_XCFLAGS) $(TARGET_FLAGS) $(TARGET_CFLAGS)
 TARGET_ACFLAGS= $(CCOPTIONS) $(TARGET_XCFLAGS) $(TARGET_FLAGS) $(TARGET_CFLAGS)
 TARGET_ALDFLAGS= $(LDOPTIONS) $(TARGET_XLDFLAGS) $(TARGET_FLAGS) $(TARGET_LDFLAGS)
@@ -360,7 +360,7 @@ endif
 ##############################################################################
 
 MINILUA_O= host/minilua.o
-MINILUA_LIBS= -lm
+MINILUA_LIBS= -lm -lreadline
 MINILUA_T= host/minilua
 MINILUA_X= $(MINILUA_T)
 
