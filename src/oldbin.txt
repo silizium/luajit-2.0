@@ -1,0 +1,2 @@
+-rwxr-xr-x 1 hanno hanno 847320 Jan  9 20:56 libluajit.so*
+-rwxr-xr-x 1 hanno hanno 854240 Jan  9 20:56 luajit*

@@ -36,7 +36,7 @@ CC= $(DEFAULT_CC)
 # to slow down the C part by not omitting it. Debugging, tracebacks and
 # unwinding are not affected -- the assembler part has frame unwind
 # information and GCC emits it where needed (x64) or with -g (see CCDEBUG).
-CCOPT= -O3 -fomit-frame-pointer -funroll-all-loops
+CCOPT= -O3 -fomit-frame-pointer #-funroll-all-loops
 # Use this if you want to generate a smaller binary (but it's slower):
 #CCOPT= -Os -fomit-frame-pointer
 # Note: it's no longer recommended to use -O3 with GCC 4.x.
@@ -51,7 +51,7 @@ CCOPT= -O3 -fomit-frame-pointer -funroll-all-loops
 # the binaries to a different machine you could also use: -march=native
 #
 CCOPT_x86= -march=i686
-CCOPT_x64= -march=bdver2 -mfma4
+CCOPT_x64= -march=bdver2 -mfma4 
 CCOPT_arm=
 CCOPT_ppc=
 CCOPT_ppcspe=
