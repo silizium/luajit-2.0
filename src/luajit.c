@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #define luajit_c
 
@@ -150,6 +152,7 @@ static void print_jit_status(lua_State *L)
     fputs(s, stdout);
   }
   putc('\n', stdout);
+  lua_settop(L, 0);  /* clear stack */
 }
 
 static void createargtable(lua_State *L, char **argv, int argc, int argf)
@@ -182,15 +185,27 @@ static int dolibrary(lua_State *L, const char *name)
   return report(L, docall(L, 1, 1));
 }
 
-static void write_prompt(lua_State *L, int firstline)
+//static void write_prompt(lua_State *L, int firstline)
+//{
+//  const char *p;
+//  lua_getfield(L, LUA_GLOBALSINDEX, firstline ? "_PROMPT" : "_PROMPT2");
+//  p = lua_tostring(L, -1);
+//  if (p == NULL) p = firstline ? LUA_PROMPT : LUA_PROMPT2;
+//  fputs(p, stdout);
+//  fflush(stdout);
+//  lua_pop(L, 1);  /* remove global */
+//}
+
+static const char *get_prompt(lua_State *L, int firstline)
 {
-  const char *p;
+  static const char *p=NULL;
   lua_getfield(L, LUA_GLOBALSINDEX, firstline ? "_PROMPT" : "_PROMPT2");
   p = lua_tostring(L, -1);
-  if (p == NULL) p = firstline ? LUA_PROMPT : LUA_PROMPT2;
-  fputs(p, stdout);
-  fflush(stdout);
+  if(p == NULL) p = firstline ? LUA_PROMPT : LUA_PROMPT2;
+  //fputs(p, stdout);
+  //fflush(stdout);
   lua_pop(L, 1);  /* remove global */
+  return p;
 }
 
 static int incomplete(lua_State *L, int status)
@@ -209,9 +224,9 @@ static int incomplete(lua_State *L, int status)
 
 static int pushline(lua_State *L, int firstline)
 {
-  char buf[LUA_MAXINPUT];
-  write_prompt(L, firstline);
-  if (fgets(buf, LUA_MAXINPUT, stdin)) {
+  char *buf=NULL;
+  if ((buf=readline(get_prompt(L, firstline)))!=NULL) {
+	add_history(buf);
     size_t len = strlen(buf);
     if (len > 0 && buf[len-1] == '\n')
       buf[len-1] = '\0';
@@ -219,6 +234,7 @@ static int pushline(lua_State *L, int firstline)
       lua_pushfstring(L, "return %s", buf+1);
     else
       lua_pushstring(L, buf);
+	free(buf);
     return 1;
   }
   return 0;
@@ -421,6 +437,7 @@ static int collectargs(char **argv, int *flags)
       break;
     case 'e':
       *flags |= FLAGS_EXEC;
+      /* fallthrough */
     case 'j':  /* LuaJIT extension */
     case 'l':
       *flags |= FLAGS_OPTION;

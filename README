@@ -14,3 +14,5 @@ Please point your favorite browser to:
 
  doc/luajit.html
 
+2018-03-01: Hanno Behrens, added "readline" interactive commandline to v2.1
+branch
